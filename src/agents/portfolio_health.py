@@ -9,8 +9,8 @@ from src.models import (
 )
 
 DISCLAIMER = (
-    "This analysis is for informational purposes only and does not constitute "
-    "investment advice. Past performance is not indicative of future results. "
+    "This is not investment advice. This analysis is for informational purposes only. "
+    "Past performance is not indicative of future results. "
     "Please consult a qualified financial adviser before making investment decisions."
 )
 
