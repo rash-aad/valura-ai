@@ -4,15 +4,24 @@ import os
 import re
 from typing import Any
 
-from google import genai
-from google.genai import types
+try:
+    from google import genai
+    from google.genai import types
+    _GENAI_AVAILABLE = True
+except ImportError:
+    genai = None
+    types = None
+    _GENAI_AVAILABLE = False
 from dotenv import load_dotenv
 
 from src.models import ClassifierResult, Entities, VALID_AGENTS
 
 load_dotenv()
 
-_CLIENT = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+try:
+    _CLIENT = genai.Client(api_key=os.environ["GEMINI_API_KEY"]) if _GENAI_AVAILABLE else None
+except Exception:
+    _CLIENT = None
 _MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
 
 _SYSTEM = """You are an intent classifier for a financial AI platform.
@@ -118,6 +127,8 @@ def classify(
         return _fallback(query)
 
     # Real Gemini call
+    if not _GENAI_AVAILABLE or not _CLIENT:
+        return _fallback(query)
     try:
         prompt = _build_prompt(query, history)
         response = _CLIENT.models.generate_content(
